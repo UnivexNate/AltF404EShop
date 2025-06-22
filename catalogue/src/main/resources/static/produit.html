@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Détail produit - AltF404</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        background-color: #f9f9f9;
+        padding: 40px;
+    }
+
+    .container {
+        max-width: 900px;
+        margin: auto;
+        background: white;
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: 0 0 20px rgba(0,0,0,0.1);
+    }
+
+    img {
+        width: 100%;
+        max-height: 400px;
+        object-fit: cover;
+        border-radius: 10px;
+    }
+
+    h1 {
+        margin-top: 20px;
+    }
+
+    .prix {
+        font-size: 22px;
+        font-weight: bold;
+        margin-top: 15px;
+    }
+
+    button {
+        margin-top: 25px;
+        padding: 10px 20px;
+        background-color: #28a745;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        font-size: 16px;
+        cursor: pointer;
+    }
+
+    button:hover {
+        background-color: #218838;
+    }
+
+    .back {
+        display: inline-block;
+        margin-bottom: 20px;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <a class="back" href="index.html">← Retour à la boutique</a>
+  <div id="contenu-produit">
+    <!-- Produit affiché ici -->
+  </div>
+</div>
+
+<script>
+  function getQueryParam(param) {
+      const urlParams = new URLSearchParams(window.location.search);
+      return urlParams.get(param);
+  }
+
+  let panier = JSON.parse(localStorage.getItem('panier')) || [];
+
+  function ajouterAuPanier(produit) {
+      panier.push(produit);
+      localStorage.setItem('panier', JSON.stringify(panier));
+      alert(`${produit.nom} ajouté au panier !`);
+  }
+
+  async function chargerProduit() {
+      const id = getQueryParam("id");
+      if (!id) {
+          document.getElementById("contenu-produit").innerHTML = "<p>ID du produit non trouvé dans l’URL.</p>";
+          return;
+      }
+
+      try {
+          const res = await fetch(`/produits/${id}`);
+          if (!res.ok) throw new Error("Produit introuvable");
+
+          const produit = await res.json();
+
+          document.getElementById("contenu-produit").innerHTML = `
+              <img src="${produit.imageUrl || 'https://via.placeholder.com/600x400'}" alt="${produit.nom}">
+              <h1>${produit.nom}</h1>
+              <p>${produit.description}</p>
+              <div class="prix">${produit.prix.toFixed(2)} €</div>
+              <button onclick='ajouterAuPanier(${JSON.stringify(produit)})'>Ajouter au panier</button>
+          `;
+      } catch (err) {
+          document.getElementById("contenu-produit").innerHTML = "<p>Erreur : Produit introuvable.</p>";
+          console.error(err);
+      }
+  }
+
+  window.onload = chargerProduit;
+</script>
+</body>
+</html>

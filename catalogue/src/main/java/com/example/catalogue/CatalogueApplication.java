@@ -14,13 +14,12 @@ public class CatalogueApplication {
 		SpringApplication.run(CatalogueApplication.class, args);
 	}
 
-	// Méthode pour insérer des données au démarrage
 	@Bean
 	CommandLineRunner runner(ProduitRepository produitRepository) {
 		return args -> {
-			produitRepository.save(new Produit());
-			produitRepository.save(new Produit());
-		};
+			produitRepository.save(new Produit(null, "T-shirt ShadowStrike", "Édition limitée 2025", 25.0, 100, "/images/tshirt.jpg","vêtements"));
+			produitRepository.save(new Produit(null, "Casquette brodée", "Logo officiel", 18.0, 50, "/images/casquettenoir.jpg", "accessoires"));
+		}; 
 	}
 }
 

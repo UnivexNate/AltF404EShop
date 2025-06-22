@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>AltF404 - Boutique Officielle</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #f7f7f7;
+        }
+
+        header {
+            background-color: #111;
+            color: white;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+
+        header nav {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        header a, header button {
+            color: white;
+            background: none;
+            border: none;
+            font-size: 16px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        header button:hover, header a:hover {
+            text-decoration: underline;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .produits {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 30px;
+        }
+
+        .produit {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.2s ease;
+        }
+
+        .produit:hover {
+            transform: translateY(-5px);
+        }
+
+        .produit img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .produit-body {
+            padding: 20px;
+            text-align: center;
+            flex-grow: 1;
+        }
+
+        .produit-body h2 {
+            font-size: 20px;
+            margin: 10px 0 5px;
+        }
+
+        .produit-body p {
+            font-size: 14px;
+            color: #555;
+        }
+
+        .produit-body .prix {
+            font-weight: bold;
+            margin-top: 10px;
+            font-size: 16px;
+        }
+
+        .produit-body button {
+            margin-top: 15px;
+            padding: 10px 15px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .produit-body button:hover {
+            background-color: #0056b3;
+        }
+
+        @media (max-width: 600px) {
+            header h1 {
+                font-size: 18px;
+            }
+        }
+    </style>
+</head>
+<body>
+<header>
+    <h1>🧢 AltF404 - Boutique Officielle</h1>
+    <nav>
+        <a href="panier.html">🛒 Mon panier <span id="panier-count">(0)</span></a>
+        <button onclick="viderPanier()">🗑️ Vider</button>
+    </nav>
+</header>
+
+<div class="container">
+    <div style="text-align: center; margin-bottom: 30px;">
+        <button onclick="filtrerProduits('tous')">Tous</button>
+        <button onclick="filtrerProduits('vêtements')">Vêtements</button>
+        <button onclick="filtrerProduits('accessoires')">Accessoires</button>
+    </div>
+    <div class="produits" id="produits-container">
+        <!-- Les produits seront chargés ici -->
+    </div>
+</div>
+
+<script>
+    let panier = JSON.parse(localStorage.getItem('panier')) || [];
+    let tousLesProduits = [];
+
+    function mettreAJourCompteur() {
+        const count = panier.length;
+        document.getElementById('panier-count').innerText = `(${count})`;
+    }
+
+    function ajouterAuPanier(produit) {
+        panier.push(produit);
+        localStorage.setItem('panier', JSON.stringify(panier));
+        mettreAJourCompteur();
+        alert(`${produit.nom} ajouté au panier !`);
+    }
+
+    function viderPanier() {
+        if (confirm("Vider le panier ?")) {
+            panier = [];
+            localStorage.removeItem('panier');
+            mettreAJourCompteur();
+            alert("Panier vidé.");
+        }
+    }
+
+    function afficherProduits(liste) {
+        const container = document.getElementById('produits-container');
+        container.innerHTML = '';
+
+        liste.forEach(produit => {
+            const div = document.createElement('div');
+            div.className = 'produit';
+
+            div.innerHTML = `
+                <img src="${produit.imageUrl || 'https://via.placeholder.com/300x200'}">
+                <div class="produit-body">
+                    <h2><a href="produit.html?id=${produit.id}" style="text-decoration: none; color: inherit;">${produit.nom}</a></h2>
+                    <p>${produit.description}</p>
+                    <div class="prix">${produit.prix.toFixed(2)} €</div>
+                    <button>Ajouter au panier</button>
+                </div>
+            `;
+
+            div.querySelector('button').onclick = () => ajouterAuPanier(produit);
+            container.appendChild(div);
+        });
+    }
+
+    function filtrerProduits(categorie) {
+        if (categorie === 'tous') {
+            afficherProduits(tousLesProduits);
+        } else {
+            const filtres = tousLesProduits.filter(p => p.categorie === categorie);
+            afficherProduits(filtres);
+        }
+    }
+
+    async function chargerProduits() {
+        try {
+            const res = await fetch('/produits');
+            tousLesProduits = await res.json();
+            mettreAJourCompteur();
+            filtrerProduits('tous');
+        } catch (err) {
+            console.error("Erreur chargement :", err);
+        }
+    }
+
+    window.onload = chargerProduits;
+</script>
+</body>
+</html>

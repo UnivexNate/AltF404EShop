@@ -4,7 +4,7 @@ import lombok.*;
 
 
 @Entity
-@Data  // Lombok pour les getters/setters/toString
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class Produit {
@@ -17,5 +17,6 @@ public class Produit {
     private String description;
     private double prix;
     private int stock;
-    private String imageUrl;  // URL d’une image produit (optionnel)
+    private String imageUrl;
+    private String categorie;
 }
