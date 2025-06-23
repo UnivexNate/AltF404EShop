@@ -17,7 +17,21 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/index.html", "/produits/**", "/images/**", "/login.html", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                        .requestMatchers(
+                                "/",
+                                "/index.html",
+                                "/produits/**",
+                                "/produit.html",
+                                "/panier.html",
+                                "/images/**",
+                                "/css/**",
+                                "/js/**",
+                                "/script.js",
+                                "/style.css",
+                                "/login.html",
+                                "/swagger-ui/**",
+                                "/v3/api-docs/**"
+                        ).permitAll()
                         .requestMatchers("/admin", "/admin.html").authenticated()
                 )
                 .formLogin(form -> form
