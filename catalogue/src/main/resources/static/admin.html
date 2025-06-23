@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Interface Admin</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #fafafa;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+
+        .form-container, .produit {
+            background: white;
+            padding: 20px;
+            margin: 20px auto;
+            max-width: 600px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        input {
+            width: 100%;
+            padding: 8px;
+            margin: 6px 0;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+        }
+
+        button {
+            background: #28a745;
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            opacity: 0.9;
+        }
+
+        .produit button {
+            margin-right: 10px;
+            background: #007bff;
+        }
+
+        .produit button:last-child {
+            background: #dc3545;
+        }
+
+        .logout {
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .logout a {
+            text-decoration: none;
+            color: #007bff;
+        }
+    </style>
+</head>
+<body>
+
+<h1>🔧 Administration de la Boutique</h1>
+
+<!-- Formulaire d’ajout -->
+<div class="form-container">
+    <h3>Ajouter un produit</h3>
+    <input id="nom" placeholder="Nom du produit" required>
+    <input id="description" placeholder="Description" required>
+    <input id="prix" type="number" placeholder="Prix" required>
+    <input id="stock" type="number" placeholder="Stock" required>
+    <input id="imageUrl" placeholder="URL de l’image">
+    <input id="categorie" placeholder="Catégorie">
+    <button onclick="addProduit()">Ajouter</button>
+</div>
+
+<!-- Liste des produits -->
+<div id="produits"></div>
+
+<!-- Formulaire de modification -->
+<div id="editForm" style="display:none" class="form-container">
+    <h3>Modifier un produit</h3>
+    <input id="edit-id" type="hidden">
+    <input id="edit-nom" placeholder="Nom du produit">
+    <input id="edit-description" placeholder="Description">
+    <input id="edit-prix" type="number" placeholder="Prix">
+    <input id="edit-stock" type="number" placeholder="Stock">
+    <input id="edit-imageUrl" placeholder="URL image">
+    <input id="edit-categorie" placeholder="Catégorie">
+    <button onclick="updateProduit()">Valider la modification</button>
+    <button onclick="cancelEdit()" style="background: #ccc;">Annuler</button>
+</div>
+
+<!-- Déconnexion -->
+<div class="logout">
+    <a href="/logout">🚪 Se déconnecter</a>
+</div>
+
+<script>
+    async function fetchProduits() {
+        const res = await fetch("/produits");
+        const produits = await res.json();
+        const container = document.getElementById("produits");
+        container.innerHTML = "";
+        produits.forEach(p => {
+            container.innerHTML += `
+                <div class="produit">
+                    <strong>${p.nom}</strong><br>
+                    <small>${p.description}</small><br>
+                    Prix : ${p.prix}€<br>
+                    Stock : ${p.stock}<br>
+                    Catégorie : ${p.categorie || 'N/A'}<br>
+                    <button onclick="openEditForm(${p.id})">Modifier</button>
+                    <button onclick="deleteProduit(${p.id})">Supprimer</button>
+                </div>`;
+        });
+    }
+
+    async function deleteProduit(id) {
+        if (confirm("Supprimer ce produit ?")) {
+            await fetch("/produits/" + id, { method: "DELETE" });
+            fetchProduits();
+        }
+    }
+
+    async function addProduit() {
+        const produit = {
+            nom: document.getElementById("nom").value,
+            description: document.getElementById("description").value,
+            prix: parseFloat(document.getElementById("prix").value),
+            stock: parseInt(document.getElementById("stock").value),
+            imageUrl: document.getElementById("imageUrl").value,
+            categorie: document.getElementById("categorie").value
+        };
+
+        await fetch("/produits", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(produit)
+        });
+
+        fetchProduits();
+    }
+
+    async function openEditForm(id) {
+        const res = await fetch("/produits/" + id);
+        const produit = await res.json();
+
+        document.getElementById("edit-id").value = produit.id;
+        document.getElementById("edit-nom").value = produit.nom;
+        document.getElementById("edit-description").value = produit.description;
+        document.getElementById("edit-prix").value = produit.prix;
+        document.getElementById("edit-stock").value = produit.stock;
+        document.getElementById("edit-imageUrl").value = produit.imageUrl || '';
+        document.getElementById("edit-categorie").value = produit.categorie || '';
+        document.getElementById("editForm").style.display = "block";
+    }
+
+    async function updateProduit() {
+        const id = document.getElementById("edit-id").value;
+        const produit = {
+            nom: document.getElementById("edit-nom").value,
+            description: document.getElementById("edit-description").value,
+            prix: parseFloat(document.getElementById("edit-prix").value),
+            stock: parseInt(document.getElementById("edit-stock").value),
+            imageUrl: document.getElementById("edit-imageUrl").value,
+            categorie: document.getElementById("edit-categorie").value
+        };
+
+        await fetch("/produits/" + id, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(produit)
+        });
+
+        document.getElementById("editForm").style.display = "none";
+        fetchProduits();
+    }
+
+    function cancelEdit() {
+        document.getElementById("editForm").style.display = "none";
+    }
+
+    window.onload = fetchProduits;
+</script>
+
+</body>
+</html>

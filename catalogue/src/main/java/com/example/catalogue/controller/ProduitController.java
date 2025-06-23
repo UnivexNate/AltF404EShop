@@ -6,6 +6,8 @@ import com.example.catalogue.exception.ProduitNotFoundException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 
 import java.util.List;
 
@@ -26,6 +28,13 @@ public class ProduitController {
         return produitService.findById(id);
     }
 
+    @PutMapping("/{id}")
+    public Produit updateProduit(@PathVariable Long id, @RequestBody Produit produit) {
+        produit.setId(id);
+        return produitService.save(produit);
+    }
+
+
     @PostMapping
     public Produit createProduit(@RequestBody Produit produit) {
         return produitService.save(produit);
@@ -36,3 +45,4 @@ public class ProduitController {
         produitService.delete(id);
     }
 }
+
