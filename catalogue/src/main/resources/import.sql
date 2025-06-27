@@ -1,0 +1,6 @@
+INSERT INTO PRODUIT (NOM, DESCRIPTION, PRIX, STOCK, IMAGE_URL, CATEGORIE) VALUES ('T-shirt AltF404', 'Édition limitée 2025', 25.0, 100, '/images/tshirt.jpg', 'vêtements');
+INSERT INTO PRODUIT (NOM, DESCRIPTION, PRIX, STOCK, IMAGE_URL, CATEGORIE) VALUES ('Casquette brodée', 'Casquette noir avec logo AltF404 brodé', 18.0, 50, '/images/casquettenoir.jpg', 'accessoires');
+INSERT INTO PRODUIT (NOM, DESCRIPTION, PRIX, STOCK, IMAGE_URL, CATEGORIE) VALUES ('Clavier Collab HyperY X AltF404', 'Souris AltF404 en collaboration avec HyperY', 110.0, 10, '/images/clavier1.jpg', 'equipements');
+INSERT INTO PRODUIT (NOM, DESCRIPTION, PRIX, STOCK, IMAGE_URL, CATEGORIE) VALUES ('Souris Gaming HyperLight Blanche AltF404', 'Souris gaming blanche wireless', 70.0, 10, '/images/souris1.jpg', 'equipements');
+INSERT INTO PRODUIT (NOM, DESCRIPTION, PRIX, STOCK, IMAGE_URL, CATEGORIE) VALUES ('Bracelet noir AltF404', 'Bracelet noir avec logo AltF404 sur la partie metallique', 20.0, 10, '/images/bracelet1.png', 'accessoires');
+INSERT INTO PRODUIT (NOM, DESCRIPTION, PRIX, STOCK, IMAGE_URL, CATEGORIE) VALUES ('Veste noir AltF404', 'Veste noir avec logo AltF404 brodé', 120.0, 10, '/images/veste1.jpg', 'vêtements');
